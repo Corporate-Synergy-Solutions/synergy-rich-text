@@ -1466,24 +1466,17 @@ export default {
 .bubble-menu {
     background-color: var(--white, #ffffff);
     border: 1px solid var(--gray-1, #e0e0e0);
-    border-radius: 0.7rem;
+    border-radius: 0.4rem;
     box-shadow: var(--shadow, 0 2px 6px rgba(0, 0, 0, 0.1));
     display: flex;
-    padding: 0.2rem;
+    padding: 4px;
+    gap: 4px;
 
     button {
         background-color: unset;
 
         &:hover {
             background-color: var(--gray-3, #f5f5f5);
-        }
-
-        &.is-active {
-            background-color: var(--purple, #7e57c2);
-
-            &:hover {
-                background-color: var(--purple-contrast, #9575cd);
-            }
         }
     }
 }
