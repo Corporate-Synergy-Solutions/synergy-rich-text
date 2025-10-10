@@ -32,6 +32,11 @@
                     title="Strikethrough">
                     <Strikethrough class="icon" />
                 </button>
+                <button type="button" class="ww-rich-text__menu-item" @click="toggleHighlight"
+                    :class="{ 'is-active': richEditor.isActive('highlight') }" :disabled="!isEditable"
+                    v-if="menu.highlight" title="Highlight">
+                    <Highlighter class="icon" />
+                </button>
 
                 <!-- Show the separator only if at least on of the previous block are visible -->
                 <span class="separator" v-if="menu.bold || menu.italic || menu.underline || menu.strike"></span>
@@ -65,12 +70,11 @@
                     v-if="menu.alignLeft || menu.alignCenter || menu.alignRight || menu.alignJustify"></span>
 
                 <!-- Color -->
-                <label class="ww-rich-text__menu-item" :for="`rich-color-${randomUid}`"
+                <label class="ww-rich-text__menu-item color-label" :for="`rich-color-${randomUid}`"
                     @click="richEditor.commands.focus()" v-if="menu.textColor" title="Text color">
                     <Paintbrush class="icon" />
                     <input :id="`rich-color-${randomUid}`" type="color" @input="setColor($event.target.value)"
-                        :value="richEditor.getAttributes('textStyle').color" style="display: none"
-                        :disabled="!isEditable" />
+                        :value="richEditor.getAttributes('textStyle').color" :disabled="!isEditable" />
                 </label>
 
                 <span class="separator" v-if="menu.textColor"></span>
@@ -195,6 +199,36 @@
             </div>
             <wwElement class="ww-rich-text__menu" v-else-if="content.customMenu" v-bind="content.customMenuElement" />
 
+            <bubble-menu v-if="richEditor" :editor="richEditor" :options="{ placement: 'bottom', offset: 8 }">
+                <div class="bubble-menu">
+                    <button type="button" class="ww-rich-text__menu-item" @click="toggleBold"
+                        :class="{ 'is-active': richEditor.isActive('bold') }" :disabled="!isEditable" v-if="menu.bold"
+                        title="Bold">
+                        <BoldIcon class="icon" />
+                    </button>
+                    <button type="button" class="ww-rich-text__menu-item" @click="toggleItalic"
+                        :class="{ 'is-active': richEditor.isActive('italic') }" :disabled="!isEditable"
+                        v-if="menu.italic" title="Italic">
+                        <ItalicIcon class="icon" />
+                    </button>
+                    <button type="button" class="ww-rich-text__menu-item" @click="toggleUnderline"
+                        :class="{ 'is-active': richEditor.isActive('underline') }" :disabled="!isEditable"
+                        v-if="menu.underline" title="Underline">
+                        <UnderlineIcon class="icon" />
+                    </button>
+                    <button type="button" class="ww-rich-text__menu-item" @click="toggleStrike"
+                        :class="{ 'is-active': richEditor.isActive('strike') }" :disabled="!isEditable"
+                        v-if="menu.strike" title="Strikethrough">
+                        <Strikethrough class="icon" />
+                    </button>
+                    <button type="button" class="ww-rich-text__menu-item" @click="toggleHighlight"
+                        :class="{ 'is-active': richEditor.isActive('highlight') }" :disabled="!isEditable"
+                        v-if="menu.highlight" title="Highlight">
+                        <Highlighter class="icon" />
+                    </button>
+                </div>
+            </bubble-menu>
+
             <editor-content class="ww-rich-text__input" :editor="richEditor" :style="richStyles" />
         </template>
     </div>
@@ -211,9 +245,10 @@ import { Placeholder } from '@tiptap/extension-placeholder';
 import Underline from '@tiptap/extension-underline';
 import Image from '@tiptap/extension-image';
 import TextAlign from '@tiptap/extension-text-align';
+import Highlight from '@tiptap/extension-highlight'
 import { TaskList, TaskItem } from '@tiptap/extension-list';
 import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table';
-import { Mathematics } from '@tiptap/extension-mathematics';
+import { BubbleMenu } from '@tiptap/extension-bubble-menu'
 
 import { computed, inject } from 'vue';
 import suggestion from './suggestion.js';
@@ -222,6 +257,7 @@ import TableIcon from './icons/table-icon.vue';
 import {
     BoldIcon,
     CodeIcon,
+    Highlighter,
     ImageIcon,
     ItalicIcon,
     LinkIcon,
@@ -287,6 +323,8 @@ export default {
         TextAlignStart,
         UnderlineIcon,
         UndoIcon,
+        Highlighter,
+        BubbleMenu
     },
     props: {
         content: { type: Object, required: true },
@@ -503,6 +541,7 @@ export default {
         menu() {
             return {
                 textType: this.content.parameterTextType ?? true,
+                highlight: this.content.parameterHighlight ?? true,
                 bold: this.content.parameterBold ?? true,
                 italic: this.content.parameterItalic ?? true,
                 underline: this.content.parameterUnderline ?? true,
@@ -770,6 +809,7 @@ export default {
                             rel: 'noopener noreferrer',
                         },
                     }),
+                    Highlight.configure({ multicolor: true }),
                     TextStyle,
                     Color,
                     Underline,
@@ -912,6 +952,9 @@ export default {
         },
         toggleStrike() {
             this.richEditor.chain().focus().toggleStrike().run();
+        },
+        toggleHighlight() {
+            this.richEditor.chain().focus().toggleHighlight().run();
         },
         setTextAlign(textAlign) {
             this.richEditor.chain().focus().setTextAlign(textAlign).run();
@@ -1418,5 +1461,54 @@ export default {
             }
         }
     }
+}
+
+.bubble-menu {
+    background-color: var(--white, #ffffff);
+    border: 1px solid var(--gray-1, #e0e0e0);
+    border-radius: 0.7rem;
+    box-shadow: var(--shadow, 0 2px 6px rgba(0, 0, 0, 0.1));
+    display: flex;
+    padding: 0.2rem;
+
+    button {
+        background-color: unset;
+
+        &:hover {
+            background-color: var(--gray-3, #f5f5f5);
+        }
+
+        &.is-active {
+            background-color: var(--purple, #7e57c2);
+
+            &:hover {
+                background-color: var(--purple-contrast, #9575cd);
+            }
+        }
+    }
+}
+
+.color-label {
+    position: relative;
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    background: #f3f4f6;
+    cursor: pointer;
+}
+
+/* Keep the native input in the document but invisible */
+.color-label input[type="color"] {
+    position: absolute;
+    inset: 0;
+    /* top:0; right:0; bottom:0; left:0; */
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    /* invisible but present */
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
 }
 </style>

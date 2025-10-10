@@ -15,7 +15,9 @@
     },
     "dependencies": {
         "@floating-ui/dom": "^1.7.4",
+        "@tiptap/extension-bubble-menu": "^3.6.6",
         "@tiptap/extension-color": "^3.6.2",
+        "@tiptap/extension-highlight": "^3.6.6",
         "@tiptap/extension-image": "^3.6.2",
         "@tiptap/extension-link": "^3.6.2",
         "@tiptap/extension-list": "^3.6.2",

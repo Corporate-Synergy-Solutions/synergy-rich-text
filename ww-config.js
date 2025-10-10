@@ -1192,6 +1192,28 @@ export default {
             },
             defaultValue: true,
         },
+        parameterHighlight: {
+            section: 'settings',
+            hidden: content => content.customMenu,
+            label: {
+                en: 'Highlight',
+            },
+            type: 'TextRadioGroup',
+            options: {
+                choices: [
+                    {
+                        value: true,
+                        default: true,
+                        label: 'Show',
+                    },
+                    {
+                        value: false,
+                        label: 'Hide',
+                    },
+                ],
+            },
+            defaultValue: true,
+        },
         parameterBold: {
             section: 'settings',
             hidden: content => content.customMenu,
