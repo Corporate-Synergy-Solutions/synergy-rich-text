@@ -248,7 +248,7 @@ import TextAlign from '@tiptap/extension-text-align';
 import Highlight from '@tiptap/extension-highlight'
 import { TaskList, TaskItem } from '@tiptap/extension-list';
 import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table';
-import { BubbleMenu } from '@tiptap/extension-bubble-menu'
+import { BubbleMenu } from '@tiptap/vue-3/menus'
 
 import { computed, inject } from 'vue';
 import suggestion from './suggestion.js';
@@ -1493,7 +1493,6 @@ export default {
     display: inline-block;
     padding: 0.5rem 1rem;
     border-radius: 6px;
-    background: #f3f4f6;
     cursor: pointer;
 }
 
